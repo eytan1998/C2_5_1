@@ -41,6 +41,8 @@ public:
         size_t currentIndex;
 
     public:
+        explicit AscendingIterator();
+
         explicit AscendingIterator(MagicalContainer& container);
 
         AscendingIterator(const AscendingIterator& other);
@@ -76,10 +78,12 @@ public:
     class SideCrossIterator {
     private:
         MagicalContainer &container;
-    public:
         bool isLeft;
-
         size_t currentIndex;
+
+    public:
+        explicit SideCrossIterator();
+
         explicit SideCrossIterator(MagicalContainer& container);
 
         SideCrossIterator(const SideCrossIterator& other);
@@ -119,6 +123,7 @@ public:
         bool isPrime(int num);
 
     public:
+        explicit PrimeIterator();
         explicit PrimeIterator(MagicalContainer& container);
 
         PrimeIterator(const PrimeIterator& other);
