@@ -1,10 +1,12 @@
 #ifndef MAGICALCONTAINER_H
 #define MAGICALCONTAINER_H
 #include <stdexcept>
-
+#include "iostream"
 #include <algorithm>
 #include <cmath>
 #include <vector>
+
+using namespace std;
 namespace ariel{}
 
 class MagicalContainer {
@@ -21,7 +23,6 @@ public:
     MagicalContainer& operator=(const MagicalContainer& other);
 
     int operator[](int index);
-
 
     void addElement(int element);
 
@@ -75,10 +76,10 @@ public:
     class SideCrossIterator {
     private:
         MagicalContainer &container;
-        size_t currentIndex;
+    public:
         bool isLeft;
 
-    public:
+        size_t currentIndex;
         explicit SideCrossIterator(MagicalContainer& container);
 
         SideCrossIterator(const SideCrossIterator& other);

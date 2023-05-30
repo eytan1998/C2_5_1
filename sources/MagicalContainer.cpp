@@ -35,7 +35,7 @@ void MagicalContainer::removeElement(int element) {
     auto it = std::find(elements.begin(), elements.end(), element);
     if (it != elements.end()) {
         elements.erase(it);
-    }else{
+    } else {
         throw std::invalid_argument("removeElement. not an element.");
     }
 }
@@ -69,7 +69,9 @@ MagicalContainer::AscendingIterator
 
 
 MagicalContainer::AscendingIterator MagicalContainer::AscendingIterator::begin() {
-    return *this;
+    AscendingIterator iter(*this);
+    iter.currentIndex = 0;
+    return iter;
 }
 
 MagicalContainer::AscendingIterator MagicalContainer::AscendingIterator::end() {
@@ -83,11 +85,12 @@ int MagicalContainer::AscendingIterator::operator*() const {
 }
 
 MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::operator++() {
-    currentIndex++;
+    if (currentIndex < container.size()) currentIndex++;
     return *this;
 }
 
 bool MagicalContainer::AscendingIterator::operator==(const AscendingIterator &other) const {
+    if (&container != &other.container) throw std::invalid_argument("==. different containers");
     return currentIndex == other.currentIndex;
 }
 
@@ -96,10 +99,12 @@ bool MagicalContainer::AscendingIterator::operator!=(const AscendingIterator &ot
 }
 
 bool MagicalContainer::AscendingIterator::operator>(const AscendingIterator &other) const {
+    if (&container != &other.container)throw std::invalid_argument(">. different containers");
     return currentIndex > other.currentIndex;
 }
 
 bool MagicalContainer::AscendingIterator::operator<(const AscendingIterator &other) const {
+    if (&container != &other.container)throw std::invalid_argument("<. different containers");
     return currentIndex < other.currentIndex;
 }
 
@@ -115,7 +120,7 @@ MagicalContainer::SideCrossIterator::SideCrossIterator(MagicalContainer &contain
 
 
 MagicalContainer::SideCrossIterator::SideCrossIterator(const MagicalContainer::SideCrossIterator &other)
-        : container(other.container), currentIndex(other.currentIndex),isLeft(other.isLeft) {}
+        : container(other.container), currentIndex(other.currentIndex), isLeft(other.isLeft) {}
 
 MagicalContainer::SideCrossIterator::~SideCrossIterator() {}
 
@@ -130,7 +135,9 @@ MagicalContainer::SideCrossIterator
 }
 
 MagicalContainer::SideCrossIterator MagicalContainer::SideCrossIterator::begin() {
-    return *this;
+    SideCrossIterator iter(*this);
+    iter.currentIndex = 0;
+    return iter;
 }
 
 MagicalContainer::SideCrossIterator MagicalContainer::SideCrossIterator::end() {
@@ -168,6 +175,7 @@ MagicalContainer::SideCrossIterator &MagicalContainer::SideCrossIterator::operat
 }
 
 bool MagicalContainer::SideCrossIterator::operator==(const SideCrossIterator &other) const {
+    if (&container != &other.container)throw std::invalid_argument(">. different containers");
     return currentIndex == other.currentIndex;
 }
 
@@ -176,11 +184,30 @@ bool MagicalContainer::SideCrossIterator::operator!=(const SideCrossIterator &ot
 }
 
 bool MagicalContainer::SideCrossIterator::operator>(const SideCrossIterator &other) const {
-    return currentIndex > other.currentIndex || (currentIndex == other.currentIndex && !isLeft && other.isLeft);
+    if (&container != &other.container)throw std::invalid_argument(">. different containers");
+
+    //calculate with one is finish
+    if(currentIndex >= container.size() && other.currentIndex < container.size()) return true;
+    if(currentIndex >= container.size() && other.currentIndex >= container.size()) return false;
+    if(currentIndex < container.size() && other.currentIndex >= container.size()) return false;
+
+    float middle = ((container.size()-1) / 2.0);
+
+
+    //closest to middle is the smaller
+    int mDis = abs(currentIndex - middle) ;
+    int oDis = abs(other.currentIndex - middle);
+
+    if(mDis < oDis) return true;
+    //same distance but I am left so came first
+    if(mDis==oDis && (!isLeft && other.isLeft)) return true;
+    //return false if greater distance, or same but he on left or we both on same side
+    return false;
 }
 
 bool MagicalContainer::SideCrossIterator::operator<(const SideCrossIterator &other) const {
-    return currentIndex < other.currentIndex || (currentIndex == other.currentIndex && isLeft && !other.isLeft);
+    //if not > so its <=, but if also != so <
+    return (!(*this > other)&& (*this != other));
 }
 
 
@@ -191,7 +218,10 @@ bool MagicalContainer::SideCrossIterator::operator<(const SideCrossIterator &oth
  */
 
 MagicalContainer::PrimeIterator::PrimeIterator(MagicalContainer &container)
-        : container(container), currentIndex(0) {}
+        : container(container), currentIndex(0) {
+    //if not prime and not end -> move
+    if (!isPrime(container[0])) ++*this;
+}
 
 
 MagicalContainer::PrimeIterator::PrimeIterator(const MagicalContainer::PrimeIterator &other)
@@ -199,8 +229,8 @@ MagicalContainer::PrimeIterator::PrimeIterator(const MagicalContainer::PrimeIter
 
 MagicalContainer::PrimeIterator::~PrimeIterator() {}
 
-MagicalContainer::PrimeIterator
-&MagicalContainer::PrimeIterator::operator=(const MagicalContainer::PrimeIterator &other) {
+MagicalContainer::PrimeIterator &MagicalContainer::PrimeIterator
+::operator=(const MagicalContainer::PrimeIterator &other) {
     if (this != &other) {
         container = other.container;
         currentIndex = other.currentIndex;
@@ -210,6 +240,7 @@ MagicalContainer::PrimeIterator
 
 MagicalContainer::PrimeIterator MagicalContainer::PrimeIterator::begin() {
     PrimeIterator iter(*this);
+    iter.currentIndex =0;
     //if not prime and not end -> move
     if (!isPrime(*iter)) ++iter;
     return iter;
@@ -226,13 +257,14 @@ int MagicalContainer::PrimeIterator::operator*() const {
 }
 
 MagicalContainer::PrimeIterator &MagicalContainer::PrimeIterator::operator++() {
-    currentIndex++;
+    if(currentIndex < container.size())currentIndex++;
     while (currentIndex < container.size() && !isPrime(container[currentIndex]))
         currentIndex++;
     return *this; // return or prime or end
 }
 
 bool MagicalContainer::PrimeIterator::operator==(const PrimeIterator &other) const {
+    if (&container != &other.container)throw std::invalid_argument(">. different containers");
     return currentIndex == other.currentIndex;
 }
 
@@ -241,10 +273,12 @@ bool MagicalContainer::PrimeIterator::operator!=(const PrimeIterator &other) con
 }
 
 bool MagicalContainer::PrimeIterator::operator>(const PrimeIterator &other) const {
+    if (&container != &other.container)throw std::invalid_argument(">. different containers");
     return currentIndex > other.currentIndex;
 }
 
 bool MagicalContainer::PrimeIterator::operator<(const PrimeIterator &other) const {
+    if (&container != &other.container)throw std::invalid_argument(">. different containers");
     return currentIndex < other.currentIndex;
 }
 
