@@ -120,10 +120,9 @@ public:
         MagicalContainer &container;
         size_t currentIndex;
 
-        bool isPrime(int num);
-
     public:
         explicit PrimeIterator();
+
         explicit PrimeIterator(MagicalContainer& container);
 
         PrimeIterator(const PrimeIterator& other);

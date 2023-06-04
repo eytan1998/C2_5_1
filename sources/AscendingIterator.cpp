@@ -11,57 +11,46 @@ MagicalContainer::AscendingIterator::AscendingIterator(MagicalContainer &contain
 
 
 MagicalContainer::AscendingIterator::AscendingIterator(const MagicalContainer::AscendingIterator &other)
-        : container(other.container), currentIndex(other.currentIndex) {}
+        = default;
 
-MagicalContainer::AscendingIterator::~AscendingIterator() {}
+
+
+MagicalContainer::AscendingIterator::~AscendingIterator() =default;
 
 MagicalContainer::AscendingIterator
 &MagicalContainer::AscendingIterator::operator=(const MagicalContainer::AscendingIterator &other) {
-    if (this != &other) {
-        container = other.container;
-        currentIndex = other.currentIndex;
-    }
     return *this;
 }
 
 
 MagicalContainer::AscendingIterator MagicalContainer::AscendingIterator::begin() {
-    AscendingIterator iter(*this);
-    iter.currentIndex = 0;
-    return iter;
+    return *this;
 }
 
 MagicalContainer::AscendingIterator MagicalContainer::AscendingIterator::end() {
-    AscendingIterator iter(*this);
-    iter.currentIndex = container.size();
-    return iter;
+    return *this;
 }
 
 int MagicalContainer::AscendingIterator::operator*() const {
-    return container[currentIndex];
+    return 0;
 }
 
 MagicalContainer::AscendingIterator &MagicalContainer::AscendingIterator::operator++() {
-    if (currentIndex == container.size()) throw logic_error("cant increment end()");
-    if (currentIndex < container.size()) currentIndex++;
     return *this;
 }
 
 bool MagicalContainer::AscendingIterator::operator==(const AscendingIterator &other) const {
-    if (&container != &other.container) throw std::invalid_argument("==. different containers");
-    return currentIndex == other.currentIndex;
+    return true;
 }
-
 bool MagicalContainer::AscendingIterator::operator!=(const AscendingIterator &other) const {
-    return !(*this == other);
+    return false;
 }
 
 bool MagicalContainer::AscendingIterator::operator>(const AscendingIterator &other) const {
-    if (&container != &other.container)throw std::invalid_argument(">. different containers");
-    return currentIndex > other.currentIndex;
+    return true;
+
 }
 
 bool MagicalContainer::AscendingIterator::operator<(const AscendingIterator &other) const {
-    if (&container != &other.container)throw std::invalid_argument("<. different containers");
-    return currentIndex < other.currentIndex;
+    return true;
 }

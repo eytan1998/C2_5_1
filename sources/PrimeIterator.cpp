@@ -7,77 +7,52 @@
 
 MagicalContainer::PrimeIterator::PrimeIterator(MagicalContainer &container)
         : container(container), currentIndex(0) {
-    //if not prime and not end -> move
-    if (!isPrime(container[currentIndex])) ++*this;
 }
 
 
 MagicalContainer::PrimeIterator::PrimeIterator(const MagicalContainer::PrimeIterator &other)
-        : container(other.container), currentIndex(other.currentIndex) {}
+        = default;
 
-MagicalContainer::PrimeIterator::~PrimeIterator() {}
+MagicalContainer::PrimeIterator::~PrimeIterator() = default;
 
 MagicalContainer::PrimeIterator &MagicalContainer::PrimeIterator
 ::operator=(const MagicalContainer::PrimeIterator &other) {
-    if (this != &other) {
-        container = other.container;
-        currentIndex = other.currentIndex;
-    }
     return *this;
 }
 
 MagicalContainer::PrimeIterator MagicalContainer::PrimeIterator::begin() {
-    PrimeIterator iter(*this);
-    iter.currentIndex =0;
-    //if not prime and not end -> move
-    if (!isPrime(*iter)) ++iter;
-    return iter;
+    return *this;
+
 }
 
 MagicalContainer::PrimeIterator MagicalContainer::PrimeIterator::end() {
-    PrimeIterator iter(*this);
-    iter.currentIndex = container.size();
-    return iter;
+    return *this;
+
 }
 
 int MagicalContainer::PrimeIterator::operator*() const {
-    return container[currentIndex];
+    return 0;
 }
 
 MagicalContainer::PrimeIterator &MagicalContainer::PrimeIterator::operator++() {
-    if (currentIndex == container.size()) throw logic_error("cant increment end()");
-    currentIndex++;
-    while (currentIndex < container.size() && !isPrime(container[currentIndex]))
-        currentIndex++;
-    return *this; // return or prime or end
+    return *this;
 }
 
 bool MagicalContainer::PrimeIterator::operator==(const PrimeIterator &other) const {
-    if (&container != &other.container)throw std::invalid_argument(">. different containers");
-    return currentIndex == other.currentIndex;
+    return true;
 }
 
 bool MagicalContainer::PrimeIterator::operator!=(const PrimeIterator &other) const {
-    return !(*this == other);
+    return false;
 }
 
 bool MagicalContainer::PrimeIterator::operator>(const PrimeIterator &other) const {
-    if (&container != &other.container)throw std::invalid_argument(">. different containers");
-    return currentIndex > other.currentIndex;
+    return true;
+
 }
 
 bool MagicalContainer::PrimeIterator::operator<(const PrimeIterator &other) const {
-    if (&container != &other.container)throw std::invalid_argument(">. different containers");
-    return currentIndex < other.currentIndex;
-}
-
-bool MagicalContainer::PrimeIterator::isPrime(int num) {
-    if (num < 2)
-        return false;
-    for (int i = 2; i <= std::sqrt(num); i++) {
-        if (num % i == 0)
-            return false;
-    }
     return true;
+
 }
 
