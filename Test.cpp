@@ -223,17 +223,28 @@ TEST_CASE("AscendingIterator") {
         CHECK_EQ(*Iter, 0);
 
     }
-    SUBCASE("remove") {
-        MagicalContainer::AscendingIterator Iter(container);
-        ++Iter;
-        CHECK_EQ(*Iter, 3);
-        //remove before not good (its moves)
+    SUBCASE("AscendingIterator add remove") {
+        MagicalContainer container;
+        container.addElement(17);
+        container.addElement(2);
+        container.addElement(25);
+        container.addElement(9);
+        container.addElement(3);
+        //  .
+        //2,3,9,17
+        //1,2,3,9,17
+        MagicalContainer::AscendingIterator it(container);
+        CHECK_EQ(*it,2);
+        container.addElement(200);
+        CHECK_EQ(*it,2);
+        CHECK_EQ(*++it,3);
+        container.addElement(1);
+        CHECK_EQ(*it,3);
+        container.removeElement(200);
+        CHECK_EQ(*it,3);
         container.removeElement(2);
-        CHECK_EQ(*Iter, 9);
+        CHECK_EQ(*it,3);
 
-        //add after is okay
-        container.removeElement(25);
-        CHECK_EQ(*Iter, 9);
 
     }
 }
@@ -402,20 +413,35 @@ TEST_CASE("SideCrossIterator") {
             toggle = !toggle;
         }
     }
-    SUBCASE("insert") {
-//        2,3,9,17,25
-//        2,25,3,17,9
-        MagicalContainer::SideCrossIterator Iter(container);
-        CHECK_EQ(*Iter, 2);
-        //add before not good (its moves)
-        container.addElement(0);
-        CHECK_EQ(*Iter, 0);
 
-        //add after is ~okay
-        container.addElement(100);
-        CHECK_EQ(*Iter, 0);
+    SUBCASE("SideCrossIterator add remove") {
+        MagicalContainer container;
+        container.addElement(1);
+        container.addElement(2);
+        container.addElement(3);
+        container.addElement(4);
+        container.addElement(5);
+
+
+        MagicalContainer::SideCrossIterator it(container);
+        CHECK_EQ(*it,1);
+        container.addElement(200);
+        CHECK_EQ(*it,1);
+        CHECK_EQ(*++it,200);
+
+        container.addElement(0);
+        CHECK_EQ(*it,200);
+
+
+
+        container.removeElement(0);
+        CHECK_EQ(*++it,2);
+        container.removeElement(200);
+        CHECK_EQ(*it,2);
+
 
     }
+
 
 }
 
@@ -557,6 +583,33 @@ TEST_CASE("PrimeIterator") {
         for (auto it = Iter.begin(); it != Iter.end(); ++i, ++it) {
             CHECK_EQ(arr[i], *it);
         }
+    }
+    SUBCASE("PrimeIterator add remove") {
+        MagicalContainer container;
+        container.addElement(17);
+        container.addElement(2);
+        container.addElement(25);
+        container.addElement(9);
+        container.addElement(3);
+        //  .
+        //2,3,17
+        //3,17
+        MagicalContainer::PrimeIterator it(container);
+        CHECK_EQ(*it,2);
+        container.addElement(51);
+        CHECK_EQ(*it,2);
+        CHECK_EQ(*++it,3);
+        CHECK_EQ(*++it,17);
+        container.addElement(7);
+        CHECK_EQ(*it,17);
+
+        container.removeElement(51);
+        CHECK_EQ(*it,17);
+        container.removeElement(2);
+        CHECK_EQ(*it,17);
+
+
+
     }
 
 }
